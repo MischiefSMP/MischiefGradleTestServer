@@ -1,6 +1,10 @@
 # MischiefGradleTestServer
 A gradle plugin to easily test plugins
 
+The test server uses a standard paper installation, you need to provide the version you want via the TestServerConfig extension.
+
+Launching the server means you accept [Mojangs Eula](https://www.minecraft.net/eula).
+
 # License
 
 MIT License
