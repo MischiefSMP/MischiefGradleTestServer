@@ -24,11 +24,15 @@ class GradlePlugin: Plugin<Project> {
         val config = project.extensions.create("TestServerConfig", ServerConfig::class.java)
         val logger = project.logger
 
+        val pluginsDir = File(config.folder, "plugins")
+        val paperJar = File(config.folder, "paper.jar")
+        val eulaTxt = File(config.folder, "eula.txt")
+
         val taskDownload = project.task("testServerDownload") { task ->
             task.group = gradleGroup
             task.description = "Refreshes the server jar"
             task.doLast {
-                if(File(config.folder, "paper.jar").exists()) return@doLast
+                if(paperJar.exists()) return@doLast
 
                 if(config.version == "none") throw GradleException("serverVersion is not set!")
                 config.folder.mkdirs()
@@ -50,9 +54,18 @@ class GradlePlugin: Plugin<Project> {
         }
 
         fun acceptEula() {
-            File(config.folder, "eula.txt").also {file ->
-                file.delete()
-                file.writeText("eula=true")
+            val acceptedEulaAlready = eulaTxt.exists() && eulaTxt.readText().contains("eula=true")
+            if(!acceptedEulaAlready) {
+                logger.lifecycle("You currently have not accepted the eula.")
+                logger.lifecycle("Please read it at https://www.minecraft.net/eula")
+                logger.lifecycle("Accept?: y/n")
+                when(readLine()) {
+                    "y" -> {
+                        eulaTxt.delete()
+                        eulaTxt.writeText("eula=true")
+                    }
+                    else -> throw GradleException("You have not accepted the eula. Server cannot start.")
+                }
             }
         }
 
@@ -70,7 +83,7 @@ class GradlePlugin: Plugin<Project> {
             doFirst {
                 config.pluginDirs.forEach { file ->
                     logger.lifecycle("Copying $file -> ${config.folder}")
-                    file.copyRecursively(File(config.folder, "plugins"), true)
+                    file.copyRecursively(pluginsDir, true)
                 }
             }
         }
@@ -78,7 +91,7 @@ class GradlePlugin: Plugin<Project> {
         project.task("testServerCleanPlugins").run {
             group = gradleGroup
             doLast {
-                File(config.folder, "plugins").deleteRecursively()
+                pluginsDir.deleteRecursively()
             }
         }
 
