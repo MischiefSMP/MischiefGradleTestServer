@@ -11,15 +11,18 @@ import java.util.Scanner
 
 class MischiefGradleUtils {
     companion object {
+        private fun getPaperBuildsJSON(version: String) = "https://papermc.io/api/v2/projects/paper/versions/$version/builds"
+        private fun getPaperJarURL(version: String, build: String) = "https://api.papermc.io/v2/projects/paper/versions/$version/builds/$build/downloads/paper-$version-$build.jar"
+
+
         fun downloadPaper(serverVersion: String, serverFolder: File) {
-            val paperURL = MischiefGradleUtils.getLatestPaperURL(serverVersion)
-            Files.copy(URL(paperURL).openStream(), File(serverFolder, "paper.jar").toPath(), StandardCopyOption.REPLACE_EXISTING)
+            Files.copy(URL(getLatestPaperURL(serverVersion)).openStream(), File(serverFolder, "paper.jar").toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
 
-        fun getLatestPaperURL(version: String): String {
-            JSONObject(getTextFromURL(Constants.PAPER_BUILDS(version))).getJSONArray("builds").also { json ->
+        private fun getLatestPaperURL(version: String): String {
+            JSONObject(getTextFromURL(getPaperBuildsJSON(version))).getJSONArray("builds").also { json ->
                 json.getJSONObject(json.length() - 1).also { build ->
-                    return Constants.PAPER_DL(version, build.getInt("build").toString())
+                    return getPaperJarURL(version, build.getInt("build").toString())
                 }
             }
         }
@@ -32,15 +35,5 @@ class MischiefGradleUtils {
                 }
             }
         }
-    }
-}
-
-class Constants {
-    companion object {
-        val PAPER_MAVEM_REPO = "https://repo.papermc.io/repository/maven-public/"
-        fun PAPER_API_ID(version: String) = "io.papermc.paper:paper-api:$version"
-
-        fun PAPER_BUILDS(version: String) = "https://papermc.io/api/v2/projects/paper/versions/$version/builds"
-        fun PAPER_DL(version: String, build: String) = "https://api.papermc.io/v2/projects/paper/versions/$version/builds/$build/downloads/paper-$version-$build.jar"
     }
 }

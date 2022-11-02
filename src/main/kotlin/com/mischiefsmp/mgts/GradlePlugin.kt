@@ -16,11 +16,8 @@ abstract class ServerConfig {
     var port = "25565"
     var onlineMode = true
     var serverName = "MischiefGradleTestServer"
-    var type = ServerType.PAPER_SPIGOT
     var pluginDirs = ArrayList<File>()
     fun pluginDir(path: File) = pluginDirs.add(path)
-
-    enum class ServerType {SPIGOT, PAPER_SPIGOT}
 }
 
 class GradlePlugin: Plugin<Project> {
