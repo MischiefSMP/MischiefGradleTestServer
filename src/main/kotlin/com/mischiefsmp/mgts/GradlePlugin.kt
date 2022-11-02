@@ -14,8 +14,6 @@ abstract class ServerConfig {
     var xmx = "2048m"
     var gui = false
     var port = "25565"
-    var onlineMode = true
-    var serverName = "MischiefGradleTestServer"
     var pluginDirs = ArrayList<File>()
     fun pluginDir(path: File) = pluginDirs.add(path)
 }
@@ -92,13 +90,16 @@ class GradlePlugin: Plugin<Project> {
                 classpath(File(config.folder, "paper.jar").absolutePath) //Jar path
                 standardInput = System.`in` //This allows input in our IDE
 
-                //Add args
-                if(!config.gui) args?.add("--nogui")
-                args?.add("-Xms${config.xms}")
-                args?.add("-Xmx${config.xmx}")
-                args?.add("--port ${config.port}")
-                args?.add("--online-mode ${config.onlineMode}")
-                args?.add("--server-name ${config.serverName}")
+                //Heap size as configured
+                minHeapSize = config.xms
+                maxHeapSize = config.xmx
+
+                //nogui flag and port, online mode cant be set via the command line. Has to be in server.properties
+                ArrayList<String>().also { mcArgs ->
+                    if(!config.gui) mcArgs.add("-nogui")
+                    mcArgs.add("-p${config.port}")
+                    args = mcArgs
+                }
             }
         }
     }
