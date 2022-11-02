@@ -69,8 +69,8 @@ class GradlePlugin: Plugin<Project> {
             group = gradleGroup
             doFirst {
                 config.pluginDirs.forEach { file ->
-                    logger.lifecycle("Copying $it -> ${config.folder}")
-                    file.copyRecursively(File(config.folder, "plugins"))
+                    logger.lifecycle("Copying $file -> ${config.folder}")
+                    file.copyRecursively(File(config.folder, "plugins"), true)
                 }
             }
         }
