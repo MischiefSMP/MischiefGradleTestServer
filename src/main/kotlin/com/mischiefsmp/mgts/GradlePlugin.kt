@@ -37,7 +37,7 @@ class GradlePlugin: Plugin<Project> {
                 if(config.version == "none") throw GradleException("serverVersion is not set!")
                 config.folder.mkdirs()
                 logger.lifecycle("Grabbing Paper jar for ${config.version}")
-                MischiefGradleUtils.downloadPaper(config.version, config.folder)
+                MischiefGradleUtils.downloadPaper(config.version, paperJar)
             }
         }
 

@@ -15,14 +15,14 @@ class MischiefGradleUtils {
         private fun getPaperJarURL(version: String, build: String) = "https://api.papermc.io/v2/projects/paper/versions/$version/builds/$build/downloads/paper-$version-$build.jar"
 
 
-        fun downloadPaper(serverVersion: String, serverFolder: File) {
-            Files.copy(URL(getLatestPaperURL(serverVersion)).openStream(), File(serverFolder, "paper.jar").toPath(), StandardCopyOption.REPLACE_EXISTING)
+        fun downloadPaper(serverVersion: String, jarFile: File) {
+            Files.copy(getLatestPaperURL(serverVersion).openStream(), jarFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
 
-        private fun getLatestPaperURL(version: String): String {
+        private fun getLatestPaperURL(version: String): URL {
             JSONObject(getTextFromURL(getPaperBuildsJSON(version))).getJSONArray("builds").also { json ->
                 json.getJSONObject(json.length() - 1).also { build ->
-                    return getPaperJarURL(version, build.getInt("build").toString())
+                    return URL(getPaperJarURL(version, build.getInt("build").toString()))
                 }
             }
         }
