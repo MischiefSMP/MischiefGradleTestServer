@@ -28,6 +28,8 @@ class GradlePlugin: Plugin<Project> {
             task.group = gradleGroup
             task.description = "Refreshes the server jar"
             task.doLast {
+                if(File(config.folder, "paper.jar").exists()) return@doLast
+
                 if(config.version == "none") throw GradleException("serverVersion is not set!")
                 config.folder.mkdirs()
                 logger.lifecycle("Grabbing Paper jar for ${config.version}")
