@@ -75,6 +75,13 @@ class GradlePlugin: Plugin<Project> {
             }
         }
 
+        project.task("testServerCleanPlugins").run {
+            group = gradleGroup
+            doLast {
+                File(config.folder, "plugins").deleteRecursively()
+            }
+        }
+
         project.task(mapOf(Pair("type", JavaExec::class.java)), "testServerLaunch").run {
             dependsOn(taskDownload, taskCopyPlugins)
             group = gradleGroup
