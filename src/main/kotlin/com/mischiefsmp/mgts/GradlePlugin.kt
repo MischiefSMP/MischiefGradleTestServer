@@ -46,7 +46,7 @@ class GradlePlugin: Plugin<Project> {
             task.description = "Opens the test server folder"
             task.doLast {
                 config.folder.also { folder ->
-                    println("Server folder: $folder")
+                    logger.lifecycle("Server folder: $folder")
                     if(!folder.exists()) folder.mkdirs()
                     Desktop.getDesktop().open(folder)
                 }
